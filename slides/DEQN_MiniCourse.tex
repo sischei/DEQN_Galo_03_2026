@@ -1394,24 +1394,21 @@ With equal weights:
 
 % --- Gradient Dominance ---
 \begin{frame}{Gradient Dominance: Why Na\"ive Weighting Fails}
-\textbf{Total loss:} $\ell = \sum_{k=1}^K \ell_k$. The gradient is:
-\[
-\nabla_\rho \ell = \sum_{k=1}^K \nabla_\rho \ell_k
-\]
+\textbf{Total loss:} $\ell = \sum_{k=1}^K \ell_k$.\quad The gradient: $\nabla_\rho \ell = \sum_{k=1}^K \nabla_\rho \ell_k$.
 
-\vspace{0.2em}
+\vspace{0.3em}
 When $\ell_j \gg \ell_k$ for some $j$:
-\begin{itemize}
-    \item $\|\nabla_\rho \ell_j\| \gg \|\nabla_\rho \ell_k\|$~~$\Rightarrow$~~the update direction is dominated by component $j$
+\begin{itemize}\itemsep1pt
+    \item $\|\nabla_\rho \ell_j\| \gg \|\nabla_\rho \ell_k\|$~~$\Rightarrow$~~update direction dominated by component $j$
     \item Components $k \neq j$ may even \emphc{increase} during training
-    \item The network converges to a solution that satisfies \emph{one} equation well but violates the others
+    \item Network satisfies \emph{one} equation well but violates the others
 \end{itemize}
 
 \vspace{0.3em}
 \begin{columns}[T]
 \column{0.48\textwidth}
 \begin{alertblock}{Na\"ive: $w_k = 1$ for all $k$}
-\begin{itemize}
+\begin{itemize}\itemsep1pt
     \item Large-scale loss dominates
     \item Small losses stagnate or worsen
     \item Effectively single-task learning
@@ -1420,9 +1417,9 @@ When $\ell_j \gg \ell_k$ for some $j$:
 
 \column{0.48\textwidth}
 \begin{exampleblock}{Adaptive: $w_k$ adjusted dynamically}
-\begin{itemize}
-    \item All loss components contribute equally to the gradient direction
-    \item The network balances all equilibrium conditions
+\begin{itemize}\itemsep1pt
+    \item All components contribute equally
+    \item Network balances all conditions
     \item True multi-task learning
 \end{itemize}
 \end{exampleblock}
