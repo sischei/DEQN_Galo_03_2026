@@ -875,7 +875,7 @@ network learns the solution \emph{while} being trained to satisfy the equilibriu
 \begin{center}
 \begin{tikzpicture}
 \begin{axis}[
-    width=11cm, height=6.5cm,
+    width=11cm, height=5.8cm,
     xlabel={Number of state variables $d$},
     ylabel={Computational cost (log scale)},
     xlabel style={font=\small},
@@ -884,9 +884,17 @@ network learns the solution \emph{while} being trained to satisfy the equilibriu
     ymode=log,
     xmin=1, xmax=25, ymin=1e2, ymax=1e22,
     grid=major, grid style={gray!15},
-    legend style={font=\small, at={(0.02,0.98)}, anchor=north west},
+    legend style={font=\small, at={(0.98,0.02)}, anchor=south east,
+                  fill=white, fill opacity=0.9, draw=gray!50},
     axis lines=left,
 ]
+    % Shaded infeasible region (draw first so it's behind)
+    \addplot[name path=top, draw=none, domain=1:25]{1e22};
+    \addplot[name path=thresh, draw=none, domain=1:25]{1e15};
+    \addplot[fill=red!8, fill opacity=0.5, forget plot] fill between[of=top and thresh];
+
+    \node[font=\footnotesize, darkred] at (axis cs:6,3e18) {Computationally infeasible};
+
     % Grid-based supervised
     \addplot[very thick, darkred, domain=1:25, samples=25]
         {10^(x) * 100};
@@ -896,13 +904,6 @@ network learns the solution \emph{while} being trained to satisfy the equilibriu
     \addplot[very thick, softgreen, domain=1:25, samples=25]
         {500 * x^2 + 1e4};
     \addlegendentry{DEQN: $\sim \mathcal{O}(d^2)$ (NN scaling)}
-
-    % Shaded infeasible region
-    \addplot[name path=top, draw=none, domain=1:25]{1e22};
-    \addplot[name path=thresh, draw=none, domain=1:25]{1e15};
-    \addplot[fill=red!8, fill opacity=0.5] fill between[of=top and thresh];
-
-    \node[font=\footnotesize, darkred] at (axis cs:15,3e18) {Computationally infeasible};
 \end{axis}
 \end{tikzpicture}
 \end{center}
