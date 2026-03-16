@@ -1,0 +1,6 @@
+\beamer@sectionintoc {1}{ML/DL Foundations}{3}{0}{1}
+\beamer@sectionintoc {2}{Deep Equilibrium Nets}{13}{0}{2}
+\beamer@sectionintoc {3}{Brock--Mirman Benchmark}{26}{0}{3}
+\beamer@sectionintoc {4}{Practical Tools: NAS \& Loss Normalization}{33}{0}{4}
+\beamer@sectionintoc {5}{Scaling Up --- The IRBC Model}{44}{0}{5}
+\beamer@sectionintoc {6}{Hands-on Exercises}{53}{0}{6}

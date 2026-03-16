@@ -1,8 +1,8 @@
 # Introduction to Deep Equilibrium Nets (DEQNs)
 *(A Mini-Course, March 2026)*
 
-**Simon Scheidegger** ([HEC, University of Lausanne](https://sites.google.com/site/simonscheidegger/))
 **Galo Nuño** ([Banco de España](https://www.galonuno.com/))
+**Simon Scheidegger** ([HEC, University of Lausanne](https://sites.google.com/site/simonscheidegger/))
 
 ---
 
