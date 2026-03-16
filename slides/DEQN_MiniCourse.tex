@@ -801,6 +801,116 @@ $\Rightarrow$ \emphc{No labels needed}---this is \textbf{unsupervised} (or ``sel
 \end{center}
 \end{frame}
 
+% --- The Cost of Labeled Data ---
+\begin{frame}{The Cost of Labeled Data in Economics}
+\textbf{Supervised learning requires labeled pairs $(\x_i, y_i)$.}
+
+\vspace{0.3em}
+In computational economics, generating a single label $y_i$ means \emphc{solving the model} at state $\x_i$---precisely the problem we are trying to solve!
+
+\vspace{0.4em}
+\begin{center}
+\renewcommand{\arraystretch}{1.35}
+{\small
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Step} & \textbf{Supervised (label generation)} & \textbf{DEQN (unsupervised)} \\
+\midrule
+1 & Choose grid $\mathcal{G}$ of $n^d$ points & Draw states from simulation \\
+2 & \emphc{Solve} $G(\x_i, y_i) = 0$ at each $\x_i$ & Evaluate residual $G(\x_i, \mathcal{N}_\rho(\x_i))$ \\
+3 & Fit $\hat{y} = f(\x; \bm{\theta})$ to $\{(\x_i, y_i)\}$ & Update $\rho$ via SGD on residual \\
+\midrule
+Cost & $\underbrace{n^d}_{\text{grid}} \times \underbrace{C_{\text{solve}}}_{\text{per point}}$ + fitting & $E \times T \times \underbrace{B}_{\text{batch}} \times C_{\text{residual}}$ \\
+\bottomrule
+\end{tabular}
+}
+\end{center}
+
+\vspace{0.4em}
+{\small
+\begin{itemize}
+    \item $C_{\text{solve}}$: cost of solving a nonlinear system or iterating a Bellman equation to convergence
+    \item $C_{\text{residual}}$: cost of a single forward pass through the equilibrium equations---\emphc{orders of magnitude cheaper}
+\end{itemize}
+}
+\end{frame}
+
+% --- Why Supervised Learning is Expensive ---
+\begin{frame}{Why Supervised Learning is Prohibitively Expensive}
+\textbf{To generate labels}, we must solve the model on a grid. This involves:
+
+\vspace{0.3em}
+\begin{columns}[T]
+\column{0.48\textwidth}
+\begin{alertblock}{1. Bellman / value function iteration}
+\begin{itemize}
+    \item Iterate $V_{k+1}(\x) = \max_a \{u(a) + \beta \E{V_k(\x')}\}$
+    \item Each iteration: solve $n^d$ optimisation problems
+    \item Typically $\mathcal{O}(100)$ iterations to converge
+    \item Interpolation between grid points introduces error
+\end{itemize}
+\end{alertblock}
+
+\column{0.48\textwidth}
+\begin{alertblock}{2. Nonlinear system solving}
+\begin{itemize}
+    \item At each $\x_i$: solve $G(\x_i, y) = 0$ via Newton's method
+    \item Each Newton step: compute and invert a Jacobian
+    \item Cost per point: $\mathcal{O}(m^3)$ for $m$ equations
+    \item Convergence not guaranteed away from the solution
+\end{itemize}
+\end{alertblock}
+\end{columns}
+
+\vspace{0.5em}
+\begin{block}{The fundamental bottleneck}
+Supervised learning \emphc{separates} solving and approximating: first compute
+the solution on a grid, then fit a function.  DEQNs \emphc{merge} these steps---the
+network learns the solution \emph{while} being trained to satisfy the equilibrium conditions.
+\end{block}
+\end{frame}
+
+% --- Computational Cost Comparison ---
+\begin{frame}{Computational Cost: Supervised vs.\ DEQN}
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[
+    width=11cm, height=6.5cm,
+    xlabel={Number of state variables $d$},
+    ylabel={Computational cost (log scale)},
+    xlabel style={font=\small},
+    ylabel style={font=\small},
+    tick label style={font=\small},
+    ymode=log,
+    xmin=1, xmax=25, ymin=1e2, ymax=1e22,
+    grid=major, grid style={gray!15},
+    legend style={font=\small, at={(0.02,0.98)}, anchor=north west},
+    axis lines=left,
+]
+    % Grid-based supervised
+    \addplot[very thick, darkred, domain=1:25, samples=25]
+        {10^(x) * 100};
+    \addlegendentry{Supervised: $n^d \times C_{\text{solve}}$}
+
+    % DEQN
+    \addplot[very thick, softgreen, domain=1:25, samples=25]
+        {500 * x^2 + 1e4};
+    \addlegendentry{DEQN: $\sim \mathcal{O}(d^2)$ (NN scaling)}
+
+    % Shaded infeasible region
+    \addplot[name path=top, draw=none, domain=1:25]{1e22};
+    \addplot[name path=thresh, draw=none, domain=1:25]{1e15};
+    \addplot[fill=red!8, fill opacity=0.5] fill between[of=top and thresh];
+
+    \node[font=\footnotesize, darkred] at (axis cs:15,3e18) {Computationally infeasible};
+\end{axis}
+\end{tikzpicture}
+\end{center}
+
+\vspace{-0.2cm}
+{\small Supervised approaches hit the wall around $d \approx 5$--$8$.  DEQNs scale gracefully to $d > 100$.}
+\end{frame}
+
 % --- DEQN Key Recap ---
 \begin{frame}{DEQN: Key Recap}
 \begin{columns}[T]
@@ -1221,6 +1331,104 @@ With equal weights:
     \item The network effectively solves a \emph{single-task} problem
 \end{itemize}
 \end{columns}
+\end{frame}
+
+% --- The Scale Mismatch Problem ---
+\begin{frame}{The Scale Mismatch Problem}
+\textbf{Example:} IRBC model with $N=10$ countries has three types of residuals:
+
+\vspace{0.3em}
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[
+    ybar,
+    width=12cm, height=5cm,
+    ylabel={Typical initial $|\text{residual}|$},
+    ylabel style={font=\small},
+    symbolic x coords={Euler 1, Euler 5, Euler 10, ARC, FB 1, FB 5, FB 10},
+    xtick=data,
+    x tick label style={font=\scriptsize, rotate=25, anchor=east},
+    ymin=0, ymax=60,
+    bar width=10pt,
+    nodes near coords,
+    every node near coord/.append style={font=\tiny},
+    nodes near coords align={vertical},
+    legend style={font=\scriptsize, at={(0.98,0.98)}, anchor=north east},
+]
+    \addplot[fill=softblue, draw=softblue!70!black] coordinates {
+        (Euler 1, 0.3) (Euler 5, 0.5) (Euler 10, 0.4) (ARC, 45) (FB 1, 2.1) (FB 5, 1.8) (FB 10, 2.5)
+    };
+\end{axis}
+\end{tikzpicture}
+\end{center}
+
+\vspace{0.2em}
+\begin{itemize}
+    \item The \emphc{aggregate resource constraint} (ARC) is $\sim\!100\times$ larger than the Euler residuals
+    \item With equal weighting: $\nabla_\rho \ell \approx \nabla_\rho \ell_{\text{ARC}}$---the network \emphc{only} learns to clear markets
+    \item Euler equations and complementarity conditions are \emphc{effectively ignored}
+\end{itemize}
+\end{frame}
+
+% --- Gradient Dominance ---
+\begin{frame}{Gradient Dominance: Why Na\"ive Weighting Fails}
+\textbf{Total loss:} $\ell = \sum_{k=1}^K \ell_k$. The gradient is:
+\[
+\nabla_\rho \ell = \sum_{k=1}^K \nabla_\rho \ell_k
+\]
+
+\vspace{0.2em}
+When $\ell_j \gg \ell_k$ for some $j$:
+\begin{itemize}
+    \item $\|\nabla_\rho \ell_j\| \gg \|\nabla_\rho \ell_k\|$~~$\Rightarrow$~~the update direction is dominated by component $j$
+    \item Components $k \neq j$ may even \emphc{increase} during training
+    \item The network converges to a solution that satisfies \emph{one} equation well but violates the others
+\end{itemize}
+
+\vspace{0.3em}
+\begin{columns}[T]
+\column{0.48\textwidth}
+\begin{alertblock}{Na\"ive: $w_k = 1$ for all $k$}
+\begin{itemize}
+    \item Large-scale loss dominates
+    \item Small losses stagnate or worsen
+    \item Effectively single-task learning
+\end{itemize}
+\end{alertblock}
+
+\column{0.48\textwidth}
+\begin{exampleblock}{Adaptive: $w_k$ adjusted dynamically}
+\begin{itemize}
+    \item All loss components contribute equally to the gradient direction
+    \item The network balances all equilibrium conditions
+    \item True multi-task learning
+\end{itemize}
+\end{exampleblock}
+\end{columns}
+\end{frame}
+
+% --- Alternative Approaches ---
+\begin{frame}{Approaches to Loss Balancing}
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+{\small
+\begin{tabular}{@{}p{3cm}p{4.5cm}p{4.5cm}@{}}
+\toprule
+\textbf{Method} & \textbf{Idea} & \textbf{Limitation} \\
+\midrule
+Equal weights & $w_k = 1/K$ & Ignores scale differences entirely \\[2pt]
+Manual tuning & Hand-pick $w_k$ & Tedious; does not adapt during training \\[2pt]
+Inverse-loss & $w_k \propto 1/\ell_k$ & Oscillates: raises weight on noisy components \\[2pt]
+GradNorm \newline (Chen et al., 2018) & Match gradient norms across tasks & Requires per-task gradient computation; expensive \\[2pt]
+Uncertainty weighting \newline (Kendall et al., 2018) & Learn $\sigma_k$: $w_k \propto 1/(2\sigma_k^2)$ & Extra parameters; can collapse \\[2pt]
+\emphc{ReLoBRaLo} \newline (Bischof et al., 2021) & Relative ratios + random lookback + smoothing & \emphc{Lightweight; robust; no extra params to learn} \\
+\bottomrule
+\end{tabular}
+}
+\end{center}
+
+\vspace{0.3em}
+{\small ReLoBRaLo's appeal: no gradient-norm computation, no extra learnable parameters, and strong empirical performance across domains (PINNs, DEQNs, multi-task regression).}
 \end{frame}
 
 % --- ReLoBRaLo ---
