@@ -40,8 +40,8 @@ The slide deck (`slides/DEQN_MiniCourse.tex`) is organized as follows:
 | I | ML/DL Foundations | DNNs as function approximators, activation functions, SGD, loss functions |
 | II | Deep Equilibrium Nets | Motivation, curse of dimensionality, DEQN loss function, training algorithm |
 | III | Brock–Mirman Benchmark | Analytical test case, DEQN implementation, parallelization & scalability |
-| IV | Scaling Up — The IRBC Model | Multi-country model, equilibrium system, high-dimensional DEQNs |
-| V | Practical Tools | Neural Architecture Search (NAS) and ReLoBRaLo loss normalization |
+| IV | Practical Tools | Neural Architecture Search (NAS) and ReLoBRaLo loss normalization |
+| V | Scaling Up — The IRBC Model | Multi-country model, equilibrium system, high-dimensional DEQNs |
 | VI | Hands-on Exercises | Notebook overview and suggested readings |
 
 ## Code Notebooks
@@ -59,9 +59,9 @@ The slide deck (`slides/DEQN_MiniCourse.tex`) is organized as follows:
 | Paper | File |
 |---|---|
 | Azinovic, Gaegauf & Scheidegger (2022). *Deep Equilibrium Nets.* International Economic Review 63(4), 1471–1525. | `readings/Azinovic_Gaegauf_Scheidegger_2022_DEQN.pdf` |
-| Fernandez-Villaverde, Hurtado & Nuño (2024). *Taming the Curse of Dimensionality.* | `readings/taming.pdf` |
-| Scheidegger et al. *Deep Surrogates for Finance.* Journal of Financial Economics. | `readings/DeepSurrogates_JFE.pdf` |
-| Scheidegger et al. *Deep Uncertainty Quantification with an Application to IAMs.* | `readings/DeepUQ_with_an_application_to_IAM.pdf` |
+| Fernández-Villaverde, Nuño & Perla (2024). *Taming the Curse of Dimensionality: Quantitative Economics with Deep Learning.* NBER Working Paper 33117. | `readings/taming.pdf` |
+| Chen, Didisheim & Scheidegger (2026). *Deep Surrogates for Finance: With an Application to Option Pricing.* Journal of Financial Economics 177, 104222. | `readings/DeepSurrogates_JFE.pdf` |
+| Friedl, Kübler, Scheidegger & Usui (2023). *Deep Uncertainty Quantification: With an Application to Integrated Assessment Models.* Working paper. | `readings/DeepUQ_with_an_application_to_IAM.pdf` |
 
 ## References
 
