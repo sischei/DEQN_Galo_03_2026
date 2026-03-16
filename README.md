@@ -51,6 +51,10 @@ pip install -r requirements.txt
 
 ---
 
+## Course Overview
+
+![Course Overview](fig/course_overview.png)
+
 ## Course Content
 
 The slide deck ([`DEQN_MiniCourse.tex`](slides/DEQN_MiniCourse.tex)) is organized as follows:

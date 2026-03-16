@@ -1,0 +1,188 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 560" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif">
+
+  <defs>
+    <linearGradient id="hdr" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#002244"/>
+      <stop offset="100%" stop-color="#004488"/>
+    </linearGradient>
+    <linearGradient id="dbar" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#003366"/>
+      <stop offset="100%" stop-color="#004C99"/>
+    </linearGradient>
+    <filter id="sh">
+      <feDropShadow dx="1" dy="2" stdDeviation="3" flood-opacity="0.12"/>
+    </filter>
+    <marker id="aB" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#4A7FB5"/>
+    </marker>
+    <marker id="aG" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#B8941F"/>
+    </marker>
+    <marker id="aGr" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#388E3C"/>
+    </marker>
+    <marker id="aP" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#7B1FA2"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1000" height="560" fill="#F5F7FA" rx="10"/>
+
+  <!-- ========= HEADER ========= -->
+  <rect x="0" y="0" width="1000" height="86" fill="url(#hdr)" rx="10"/>
+  <rect x="0" y="56" width="1000" height="30" fill="url(#hdr)"/>
+
+  <!-- Decorative mini neural-net icon -->
+  <circle cx="52" cy="26" r="4" fill="none" stroke="#6699CC" stroke-width="1.2"/>
+  <circle cx="52" cy="42" r="4" fill="none" stroke="#6699CC" stroke-width="1.2"/>
+  <circle cx="52" cy="58" r="4" fill="none" stroke="#6699CC" stroke-width="1.2"/>
+  <circle cx="82" cy="19" r="4" fill="none" stroke="#CC9900" stroke-width="1.2"/>
+  <circle cx="82" cy="35" r="4" fill="none" stroke="#CC9900" stroke-width="1.2"/>
+  <circle cx="82" cy="51" r="4" fill="none" stroke="#CC9900" stroke-width="1.2"/>
+  <circle cx="82" cy="67" r="4" fill="none" stroke="#CC9900" stroke-width="1.2"/>
+  <circle cx="112" cy="32" r="4" fill="none" stroke="#6699CC" stroke-width="1.2"/>
+  <circle cx="112" cy="52" r="4" fill="none" stroke="#6699CC" stroke-width="1.2"/>
+  <line x1="56" y1="26" x2="78" y2="19" stroke="#446688" stroke-width="0.6" opacity="0.5"/>
+  <line x1="56" y1="26" x2="78" y2="35" stroke="#446688" stroke-width="0.6" opacity="0.5"/>
+  <line x1="56" y1="42" x2="78" y2="35" stroke="#446688" stroke-width="0.6" opacity="0.5"/>
+  <line x1="56" y1="42" x2="78" y2="51" stroke="#446688" stroke-width="0.6" opacity="0.5"/>
+  <line x1="56" y1="58" x2="78" y2="51" stroke="#446688" stroke-width="0.6" opacity="0.5"/>
+  <line x1="56" y1="58" x2="78" y2="67" stroke="#446688" stroke-width="0.6" opacity="0.5"/>
+  <line x1="86" y1="19" x2="108" y2="32" stroke="#997711" stroke-width="0.6" opacity="0.5"/>
+  <line x1="86" y1="35" x2="108" y2="32" stroke="#997711" stroke-width="0.6" opacity="0.5"/>
+  <line x1="86" y1="51" x2="108" y2="52" stroke="#997711" stroke-width="0.6" opacity="0.5"/>
+  <line x1="86" y1="67" x2="108" y2="52" stroke="#997711" stroke-width="0.6" opacity="0.5"/>
+
+  <!-- Title -->
+  <text x="500" y="30" text-anchor="middle" fill="white" font-size="22" font-weight="700" letter-spacing="0.5">Introduction to Deep Equilibrium Nets (DEQNs)</text>
+  <text x="500" y="52" text-anchor="middle" fill="#CC9900" font-size="12" font-weight="500">Mini-Course &#160;&#183;&#160; March 2026</text>
+  <text x="500" y="74" text-anchor="middle" fill="#AABBCC" font-size="11">Galo Nu&#241;o (Banco de Espa&#241;a) &#160;&#183;&#160; Simon Scheidegger (HEC, University of Lausanne)</text>
+
+  <!-- ========= ROW 1: Foundations & Methodology ========= -->
+  <rect x="18" y="102" width="964" height="185" fill="white" rx="10" filter="url(#sh)"/>
+  <rect x="18" y="102" width="964" height="34" fill="url(#dbar)" rx="10"/>
+  <rect x="18" y="122" width="964" height="14" fill="#003D73"/>
+  <text x="500" y="124" text-anchor="middle" fill="white" font-size="14" font-weight="700" letter-spacing="0.8">FOUNDATIONS &#160;&#38;&#160; METHODOLOGY</text>
+
+  <!-- Box 1: ML/DL Foundations -->
+  <rect x="34" y="148" width="290" height="127" fill="#EAF0F7" rx="8" stroke="#3D6D9E" stroke-width="1"/>
+  <rect x="34" y="148" width="290" height="28" fill="#3D6D9E" rx="8"/>
+  <rect x="34" y="166" width="290" height="10" fill="#3D6D9E"/>
+  <text x="179" y="167" text-anchor="middle" fill="white" font-size="11" font-weight="700">Part I &#160;&#8212;&#160; ML / DL Foundations</text>
+  <text x="179" y="194" text-anchor="middle" fill="#333" font-size="9.5">DNNs as Function Approximators</text>
+  <text x="179" y="209" text-anchor="middle" fill="#333" font-size="9.5">Activation Functions &amp; Layers</text>
+  <text x="179" y="224" text-anchor="middle" fill="#333" font-size="9.5">Stochastic Gradient Descent</text>
+  <text x="179" y="239" text-anchor="middle" fill="#333" font-size="9.5">Loss Functions &amp; Training</text>
+  <text x="179" y="264" text-anchor="middle" fill="#888" font-size="8" font-style="italic">Slides: Part I</text>
+
+  <!-- Arrow 1 to 2 -->
+  <line x1="324" y1="212" x2="348" y2="212" stroke="#4A7FB5" stroke-width="2" marker-end="url(#aB)"/>
+
+  <!-- Box 2: Deep Equilibrium Nets -->
+  <rect x="356" y="148" width="290" height="127" fill="#FFF7E0" rx="8" stroke="#B8941F" stroke-width="1"/>
+  <rect x="356" y="148" width="290" height="28" fill="#B8941F" rx="8"/>
+  <rect x="356" y="166" width="290" height="10" fill="#B8941F"/>
+  <text x="501" y="167" text-anchor="middle" fill="white" font-size="11" font-weight="700">Part II &#160;&#8212;&#160; Deep Equilibrium Nets</text>
+  <text x="501" y="194" text-anchor="middle" fill="#333" font-size="9.5">Motivation &amp; Curse of Dimensionality</text>
+  <text x="501" y="209" text-anchor="middle" fill="#333" font-size="9.5">DEQN Loss Function Design</text>
+  <text x="501" y="224" text-anchor="middle" fill="#333" font-size="9.5">Training Algorithm</text>
+  <text x="501" y="239" text-anchor="middle" fill="#333" font-size="9.5">Economic Equilibrium Conditions</text>
+  <text x="501" y="264" text-anchor="middle" fill="#888" font-size="8" font-style="italic">Slides: Part II</text>
+
+  <!-- Arrow 2 to 3 -->
+  <line x1="646" y1="212" x2="670" y2="212" stroke="#B8941F" stroke-width="2" marker-end="url(#aG)"/>
+
+  <!-- Box 3: Brock-Mirman Benchmark -->
+  <rect x="678" y="148" width="290" height="127" fill="#FFF7E0" rx="8" stroke="#B8941F" stroke-width="1"/>
+  <rect x="678" y="148" width="290" height="28" fill="#B8941F" rx="8"/>
+  <rect x="678" y="166" width="290" height="10" fill="#B8941F"/>
+  <text x="823" y="167" text-anchor="middle" fill="white" font-size="11" font-weight="700">Part III &#160;&#8212;&#160; Brock&#8211;Mirman Benchmark</text>
+  <text x="823" y="194" text-anchor="middle" fill="#333" font-size="9.5">Analytical Solution for Validation</text>
+  <text x="823" y="209" text-anchor="middle" fill="#333" font-size="9.5">DEQN Implementation</text>
+  <text x="823" y="224" text-anchor="middle" fill="#333" font-size="9.5">Stochastic Extensions (TFP)</text>
+  <text x="823" y="239" text-anchor="middle" fill="#333" font-size="9.5">Parallelization &amp; Scalability</text>
+  <text x="823" y="264" text-anchor="middle" fill="#888" font-size="8" font-style="italic">Notebooks 01 &#8211; 03</text>
+
+  <!-- ========= ROW 2: Tools, Scaling & Practice ========= -->
+  <rect x="18" y="300" width="964" height="185" fill="white" rx="10" filter="url(#sh)"/>
+  <rect x="18" y="300" width="964" height="34" fill="url(#dbar)" rx="10"/>
+  <rect x="18" y="320" width="964" height="14" fill="#003D73"/>
+  <text x="500" y="322" text-anchor="middle" fill="white" font-size="14" font-weight="700" letter-spacing="0.8">TOOLS, SCALING &#160;&#38;&#160; PRACTICE</text>
+
+  <!-- Box 4: NAS & ReLoBRaLo -->
+  <rect x="34" y="346" width="290" height="127" fill="#E8F5E9" rx="8" stroke="#388E3C" stroke-width="1"/>
+  <rect x="34" y="346" width="290" height="28" fill="#388E3C" rx="8"/>
+  <rect x="34" y="364" width="290" height="10" fill="#388E3C"/>
+  <text x="179" y="365" text-anchor="middle" fill="white" font-size="11" font-weight="700">Part IV &#160;&#8212;&#160; NAS &#38; ReLoBRaLo</text>
+  <text x="179" y="392" text-anchor="middle" fill="#333" font-size="9.5">Neural Architecture Search</text>
+  <text x="179" y="407" text-anchor="middle" fill="#333" font-size="9.5">Hyperparameter Tuning</text>
+  <text x="179" y="422" text-anchor="middle" fill="#333" font-size="9.5">Multi-Task Loss Balancing</text>
+  <text x="179" y="437" text-anchor="middle" fill="#333" font-size="9.5">ReLoBRaLo Normalization</text>
+  <text x="179" y="462" text-anchor="middle" fill="#888" font-size="8" font-style="italic">Slides: Part IV</text>
+
+  <!-- Arrow 4 to 5 -->
+  <line x1="324" y1="410" x2="348" y2="410" stroke="#388E3C" stroke-width="2" marker-end="url(#aGr)"/>
+
+  <!-- Box 5: IRBC Model -->
+  <rect x="356" y="346" width="290" height="127" fill="#FFF7E0" rx="8" stroke="#B8941F" stroke-width="1"/>
+  <rect x="356" y="346" width="290" height="28" fill="#B8941F" rx="8"/>
+  <rect x="356" y="364" width="290" height="10" fill="#B8941F"/>
+  <text x="501" y="365" text-anchor="middle" fill="white" font-size="11" font-weight="700">Part V &#160;&#8212;&#160; Scaling Up: IRBC Model</text>
+  <text x="501" y="392" text-anchor="middle" fill="#333" font-size="9.5">Multi-Country Dynamics</text>
+  <text x="501" y="407" text-anchor="middle" fill="#333" font-size="9.5">Equilibrium System &amp; Complementarity</text>
+  <text x="501" y="422" text-anchor="middle" fill="#333" font-size="9.5">Gauss&#8211;Hermite Quadrature</text>
+  <text x="501" y="437" text-anchor="middle" fill="#333" font-size="9.5">High-Dimensional DEQNs</text>
+  <text x="501" y="462" text-anchor="middle" fill="#888" font-size="8" font-style="italic">Notebook 04</text>
+
+  <!-- Arrow 5 to 6 -->
+  <line x1="646" y1="410" x2="670" y2="410" stroke="#B8941F" stroke-width="2" marker-end="url(#aG)"/>
+
+  <!-- Box 6: Hands-On Exercises -->
+  <rect x="678" y="346" width="290" height="127" fill="#F3E5F5" rx="8" stroke="#7B1FA2" stroke-width="1"/>
+  <rect x="678" y="346" width="290" height="28" fill="#7B1FA2" rx="8"/>
+  <rect x="678" y="364" width="290" height="10" fill="#7B1FA2"/>
+  <text x="823" y="365" text-anchor="middle" fill="white" font-size="11" font-weight="700">Part VI &#160;&#8212;&#160; Hands-On Exercises</text>
+  <text x="823" y="392" text-anchor="middle" fill="#333" font-size="9.5">Coding Exercises (Fill-in)</text>
+  <text x="823" y="407" text-anchor="middle" fill="#333" font-size="9.5">Model Implementation</text>
+  <text x="823" y="422" text-anchor="middle" fill="#333" font-size="9.5">Suggested Readings</text>
+  <text x="823" y="437" text-anchor="middle" fill="#333" font-size="9.5">Individual Discussions</text>
+  <text x="823" y="462" text-anchor="middle" fill="#888" font-size="8" font-style="italic">Notebook 03 (Exercises)</text>
+
+  <!-- ========= LEGEND ========= -->
+  <rect x="18" y="498" width="964" height="24" fill="white" rx="6" filter="url(#sh)"/>
+  <rect x="30" y="504" width="10" height="10" fill="#3D6D9E" rx="2"/>
+  <text x="44" y="513" fill="#333" font-size="9">Theory</text>
+  <rect x="95" y="504" width="10" height="10" fill="#B8941F" rx="2"/>
+  <text x="109" y="513" fill="#333" font-size="9">Economic Methods</text>
+  <rect x="215" y="504" width="10" height="10" fill="#388E3C" rx="2"/>
+  <text x="229" y="513" fill="#333" font-size="9">Computational Tools</text>
+  <rect x="345" y="504" width="10" height="10" fill="#7B1FA2" rx="2"/>
+  <text x="359" y="513" fill="#333" font-size="9">Practice</text>
+
+  <!-- ========= FOOTER: Tools ========= -->
+  <rect x="18" y="530" width="964" height="24" fill="#002244" rx="8"/>
+  <text x="44" y="546" fill="#CC9900" font-size="11" font-weight="700">Tools:</text>
+
+  <rect x="92" y="536" width="62" height="16" fill="#1A3A5C" rx="4"/>
+  <text x="123" y="548" text-anchor="middle" fill="white" font-size="9.5">Python</text>
+
+  <rect x="162" y="536" width="90" height="16" fill="#1A3A5C" rx="4"/>
+  <text x="207" y="548" text-anchor="middle" fill="white" font-size="9.5">TensorFlow</text>
+
+  <rect x="260" y="536" width="96" height="16" fill="#1A3A5C" rx="4"/>
+  <text x="308" y="548" text-anchor="middle" fill="white" font-size="9.5">TF Probability</text>
+
+  <rect x="364" y="536" width="68" height="16" fill="#1A3A5C" rx="4"/>
+  <text x="398" y="548" text-anchor="middle" fill="white" font-size="9.5">PyTorch</text>
+
+  <rect x="440" y="536" width="62" height="16" fill="#1A3A5C" rx="4"/>
+  <text x="471" y="548" text-anchor="middle" fill="white" font-size="9.5">NumPy</text>
+
+  <rect x="510" y="536" width="62" height="16" fill="#1A3A5C" rx="4"/>
+  <text x="541" y="548" text-anchor="middle" fill="white" font-size="9.5">SciPy</text>
+
+  <rect x="580" y="536" width="80" height="16" fill="#1A3A5C" rx="4"/>
+  <text x="620" y="548" text-anchor="middle" fill="white" font-size="9.5">Matplotlib</text>
+
+</svg>
