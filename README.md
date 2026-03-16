@@ -79,6 +79,7 @@ The slide deck ([`DEQN_MiniCourse.tex`](slides/DEQN_MiniCourse.tex)) is organize
 | 03 | [`03_DEQN_Exercises_Blancs`](code/03_DEQN_Exercises_Blancs.ipynb) | DEQN Exercises (blanks to fill in) |
 | 03s | [`03_DEQN_Exercises_Solutions`](code/03_DEQN_Exercises_Solutions.ipynb) | DEQN Exercises (solutions) |
 | 04 | [`04_IRBC_DEQN`](code/04_IRBC_DEQN.ipynb) | DEQN: International Real Business Cycle Model |
+| 05 | [`05_Neural_Architecture_Search`](code/05_Neural_Architecture_Search.ipynb) | NAS via random search: hyperparameter tuning for DNNs |
 
 ---
 

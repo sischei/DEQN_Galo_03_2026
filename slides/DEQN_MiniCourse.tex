@@ -1295,6 +1295,27 @@ on the \emph{unimportant} axis. Random explores the important axis \emphc{4$\tim
 \end{enumerate}
 \end{frame}
 
+% --- NAS Notebook Reference ---
+\begin{frame}{NAS Hands-on Notebook}
+\textbf{Hands-on:} \texttt{05\_Neural\_Architecture\_Search.ipynb}
+
+\vspace{0.5em}
+\begin{enumerate}
+    \item Define a test function (Genz Gaussian on $[0,1]^2$)
+    \item Specify a hyperparameter search space:
+    \begin{itemize}
+        \item Depth (1--5 layers), width (32--256), activation (ReLU, tanh, ELU, Swish)
+        \item Dropout, batch normalization, optimizer, learning rate, batch size
+    \end{itemize}
+    \item Run \textbf{30 random trials} with early stopping
+    \item Select \textbf{top-5 architectures}, retrain for longer evaluation
+    \item Analyse which hyperparameters matter most
+\end{enumerate}
+
+\vspace{0.5em}
+{\small Runtime: $\sim$2--3 minutes on CPU. All code in the \texttt{code/} directory.}
+\end{frame}
+
 % ---- Loss Normalization Section ----
 
 % --- Motivation: Multi-Component Losses ---
@@ -1411,25 +1432,25 @@ When $\ell_j \gg \ell_k$ for some $j$:
 % --- Alternative Approaches ---
 \begin{frame}{Approaches to Loss Balancing}
 \begin{center}
-\renewcommand{\arraystretch}{1.3}
-{\small
-\begin{tabular}{@{}p{3cm}p{4.5cm}p{4.5cm}@{}}
+\renewcommand{\arraystretch}{1.15}
+{\footnotesize
+\begin{tabular}{@{}p{3.2cm}p{3.8cm}p{4.2cm}@{}}
 \toprule
 \textbf{Method} & \textbf{Idea} & \textbf{Limitation} \\
 \midrule
-Equal weights & $w_k = 1/K$ & Ignores scale differences entirely \\[2pt]
-Manual tuning & Hand-pick $w_k$ & Tedious; does not adapt during training \\[2pt]
-Inverse-loss & $w_k \propto 1/\ell_k$ & Oscillates: raises weight on noisy components \\[2pt]
-GradNorm \newline (Chen et al., 2018) & Match gradient norms across tasks & Requires per-task gradient computation; expensive \\[2pt]
-Uncertainty weighting \newline (Kendall et al., 2018) & Learn $\sigma_k$: $w_k \propto 1/(2\sigma_k^2)$ & Extra parameters; can collapse \\[2pt]
-\emphc{ReLoBRaLo} \newline (Bischof et al., 2021) & Relative ratios + random lookback + smoothing & \emphc{Lightweight; robust; no extra params to learn} \\
+Equal weights & $w_k = 1/K$ & Ignores scale differences \\[1pt]
+Manual tuning & Hand-pick $w_k$ & Does not adapt during training \\[1pt]
+Inverse-loss & $w_k \propto 1/\ell_k$ & Oscillates on noisy components \\[1pt]
+GradNorm (Chen+ 2018) & Match gradient norms across tasks & Per-task gradient computation; expensive \\[1pt]
+Uncertainty wt.\ (Kendall+ 2018) & Learn $\sigma_k$: $w_k \!\propto\! 1/(2\sigma_k^2)$ & Extra parameters; can collapse \\[1pt]
+\emphc{ReLoBRaLo} (Bischof+ 2021) & Relative ratios + random lookback + smoothing & \emphc{Lightweight; robust; no extra params to learn} \\
 \bottomrule
 \end{tabular}
 }
 \end{center}
 
 \vspace{0.3em}
-{\small ReLoBRaLo's appeal: no gradient-norm computation, no extra learnable parameters, and strong empirical performance across domains (PINNs, DEQNs, multi-task regression).}
+{\small \textbf{ReLoBRaLo's appeal:} no gradient-norm computation, no extra learnable parameters, strong empirical performance across PINNs, DEQNs, and multi-task regression.}
 \end{frame}
 
 % --- ReLoBRaLo ---
@@ -1807,6 +1828,7 @@ Analytical sol. & yes ($\delta=1$) & no \\
 \texttt{03\_DEQN\_Exercises\_Blancs} & Exercise problems (blanks to fill in) \\
 \texttt{03\_DEQN\_Exercises\_Solutions} & Exercise solutions \\
 \texttt{04\_IRBC\_DEQN} & Full IRBC model: multi-country DEQN with adjustment costs and irreversibility \\
+\texttt{05\_Neural\_Architecture\_Search} & NAS via random search: hyperparameter space, top-$k$ selection \\
 \bottomrule
 \end{tabular}
 }
