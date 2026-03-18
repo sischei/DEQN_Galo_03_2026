@@ -66,7 +66,8 @@ The slide deck ([`DEQN_MiniCourse.tex`](slides/DEQN_MiniCourse.tex)) is organize
 | III | Brock–Mirman Benchmark | Analytical test case, DEQN implementation, parallelization & scalability |
 | IV | Practical Tools | Neural Architecture Search (NAS) and ReLoBRaLo loss normalization |
 | V | Scaling Up — The IRBC Model | Multi-country model, equilibrium system, high-dimensional DEQNs |
-| VI | Hands-on Exercises | Notebook overview and suggested readings |
+| VI | Deep Surrogate Models | Pseudo-states, speed gains, structural estimation, UQ, GPs, Bayesian Active Learning |
+| VII | Hands-on Exercises | Notebook overview and suggested readings |
 
 ---
 
@@ -80,6 +81,8 @@ The slide deck ([`DEQN_MiniCourse.tex`](slides/DEQN_MiniCourse.tex)) is organize
 | 03s | [`03_DEQN_Exercises_Solutions`](code/03_DEQN_Exercises_Solutions.ipynb) | DEQN Exercises (solutions) |
 | 04 | [`04_IRBC_DEQN`](code/04_IRBC_DEQN.ipynb) | DEQN: International Real Business Cycle Model |
 | 05 | [`05_Neural_Architecture_Search`](code/05_Neural_Architecture_Search.ipynb) | NAS via random search: hyperparameter tuning for DNNs |
+| 06 | [`06_Surrogate_Primer`](code/06_Surrogate_Primer.ipynb) | Deep surrogates: Black-Scholes pricing & implied volatility inversion |
+| 07 | [`07_GP_and_BAL`](code/07_GP_and_BAL.ipynb) | GP regression from scratch, scikit-learn, Bayesian Active Learning |
 
 ---
 

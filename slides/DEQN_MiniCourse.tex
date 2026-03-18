@@ -1806,7 +1806,506 @@ Analytical sol. & yes ($\delta=1$) & no \\
 
 
 % ============================================================================
-% PART VI: HANDS-ON EXERCISES
+% PART VI: DEEP SURROGATE MODELS
+% ============================================================================
+
+\section{Deep Surrogate Models}
+
+% --- Motivation: Why Surrogates? ---
+\begin{frame}{Motivation: Why Surrogates?}
+\begin{block}{The computational bottleneck}
+Economic \& financial models are expensive to evaluate:
+\begin{itemize}
+  \item Solving Bellman equations / dynamic programming (DEQNs)
+  \item PDE-based models (HJB, Black--Scholes for exotics)
+  \item Monte Carlo simulations for risk measures
+\end{itemize}
+\end{block}
+
+\vspace{0.3cm}
+\begin{alertblock}{Key insight}
+\emphc{We know the true model} --- we can generate \emph{unlimited} training data by solving the model on a design of experiments.
+\end{alertblock}
+
+\vspace{0.3cm}
+\textbf{Goal:} Build a \emphc{surrogate} $\phi(\cdot\,|\,\theta_{NN})$ that approximates $f(\cdot)$ but evaluates \emph{orders of magnitude faster}.
+\end{frame}
+
+% --- Look-up Tables to Neural Networks ---
+\begin{frame}{Look-up Tables $\to$ Neural Networks}
+\begin{columns}[T]
+\begin{column}{0.42\textwidth}
+\textbf{Traditional:} pre-compute \& interpolate.\\[2pt]
+\begin{center}
+\footnotesize
+\begin{tabular}{cc}
+\toprule
+$x$ & $\Phi(x)$ \\
+\midrule
+$-2.0$ & $0.0228$ \\
+$-1.0$ & $0.1587$ \\
+$\phantom{-}0.0$ & $0.5000$ \\
+$\phantom{-}1.0$ & $0.8413$ \\
+$\phantom{-}2.0$ & $0.9772$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+\vspace{2pt}
+{\footnotesize Example: standard normal CDF table.}
+\end{column}
+
+\begin{column}{0.55\textwidth}
+\textbf{21st-century look-up table:}\\[2pt]
+A neural network memorizes $\x \mapsto y$:
+\[
+\phi(\x_t\,|\,\theta_{NN}) \approx y_t = f(\x_t)
+\]
+\vspace{-4pt}
+\begin{center}
+\begin{tikzpicture}[
+    mlstep/.style={rectangle, draw=uzhblue, fill=uzhgreylight,
+        minimum width=1.6cm, minimum height=0.6cm, font=\footnotesize,
+        rounded corners=2pt, thick},
+    >=Stealth
+]
+\node[mlstep] (input) {States $\x_t$};
+\node[mlstep, right=1.2cm of input, fill=softblue!30] (dnn) {DNN};
+\node[mlstep, right=1.2cm of dnn] (output) {Output $y_t$};
+\draw[->, thick] (input) -- (dnn);
+\draw[->, thick] (dnn) -- (output);
+\end{tikzpicture}
+\end{center}
+\vspace{2pt}
+{\footnotesize \emphc{Continuous}, \emphc{differentiable}, works in \emphc{any dimension}.}
+\end{column}
+\end{columns}
+\end{frame}
+
+% --- Pseudo-States: The Key Idea ---
+\begin{frame}{Pseudo-States: The Key Innovation}
+\begin{block}{Core insight (Chen, Didisheim \& Scheidegger 2026)}
+Treat model parameters $\theta$ as \emphc{extra state variables}:
+\vspace{-2pt}
+\[
+\tilde{\x} = \bigl(\underbrace{s_1,\dots,s_n}_{\text{states}},\;
+\underbrace{h_1,\dots,h_h}_{\text{hidden}},\;
+\underbrace{\theta_1,\dots,\theta_p}_{\text{parameters}}\bigr)
+\in \R^{d}, \quad d = n + h + p.
+\]
+\vspace{-6pt}
+\end{block}
+
+\vspace{-0.1cm}
+\begin{center}
+\begin{tikzpicture}[
+    mlstep/.style={rectangle, draw=uzhblue, fill=uzhgreylight,
+        minimum width=2cm, minimum height=0.6cm, font=\footnotesize,
+        rounded corners=2pt, thick},
+    >=Stealth
+]
+\node[mlstep] (states) {States $s$};
+\node[mlstep, below=0.2cm of states] (hidden) {Hidden $h$};
+\node[mlstep, below=0.2cm of hidden, fill=softorange!30] (params) {Params $\theta$};
+
+\node[mlstep, right=1.8cm of hidden, fill=softblue!30,
+      minimum width=2.2cm, minimum height=2.2cm] (surr) {\large Surrogate $\phi$};
+
+\node[mlstep, right=1.8cm of surr] (output) {$y = \phi(\tilde{\x}|\theta_{NN})$};
+
+\draw[->, thick] (states.east) -- ++(0.4,0) |- ([yshift=0.35cm]surr.west);
+\draw[->, thick] (hidden.east) -- (surr.west);
+\draw[->, thick] (params.east) -- ++(0.4,0) |- ([yshift=-0.35cm]surr.west);
+\draw[->, thick] (surr) -- (output);
+\end{tikzpicture}
+\end{center}
+
+\vspace{0.1cm}
+Solve the model \emphc{once} over the full augmented space $\Rightarrow$ instant evaluation for \emph{any} parameter configuration.
+\end{frame}
+
+% --- Building the Surrogate ---
+\begin{frame}{Building the Surrogate}
+\begin{enumerate}
+  \item \textbf{Design:} Draw $\tilde{\x}_i$ uniformly from $[\underline{x},\bar{x}]^d$, \quad $i = 1,\dots,m$.
+  \item \textbf{Label:} Compute $y_i = f(\tilde{\x}_i)$ using the expensive model.
+  \item \textbf{Train:} Minimize the empirical risk:
+  \[
+  \hat{\theta}_{NN} = \argmin_{\theta_{NN}} \frac{1}{m}\sum_{i=1}^{m}
+  \bigl|\phi(\tilde{\x}_i\,|\,\theta_{NN}) - y_i\bigr|^2.
+  \]
+  \item \textbf{Validate:} On a held-out test set, compute max / mean absolute error.
+\end{enumerate}
+
+\vspace{0.4cm}
+\begin{block}{Remark}
+Since we can generate \emph{unlimited} data from the true model, the training set can be made as large as needed $\Rightarrow$ \emphc{no overfitting risk} in the traditional sense.
+\end{block}
+\end{frame}
+
+% --- Why Surrogates Are Different ---
+\begin{frame}{Why Surrogates $\neq$ Standard ML}
+\begin{columns}[T]
+\begin{column}{0.48\textwidth}
+\textbf{Standard supervised learning:}
+\begin{itemize}
+  \item Data is \emph{scarce} and noisy
+  \item Overfitting is a major concern
+  \item Regularization, early stopping, cross-validation
+  \item Small learning rates, careful tuning
+\end{itemize}
+\end{column}
+\begin{column}{0.48\textwidth}
+\textbf{Surrogate modelling:}
+\begin{itemize}
+  \item Data is \emphc{unlimited} (we own the model)
+  \item Labels are \emphc{exact} (or noise-free)
+  \item Can use large epochs, aggressive LR
+  \item Focus on \emph{approximation error}, not generalization
+\end{itemize}
+\end{column}
+\end{columns}
+
+\vspace{0.5cm}
+\begin{block}{Once trained}
+\begin{itemize}
+  \item \emphc{Highly accurate} (errors $< 10^{-4}$ relative)
+  \item \emphc{Orders of magnitude faster} than the original model
+  \item \emphc{Differentiable:} gradients via automatic differentiation (backprop)
+\end{itemize}
+\end{block}
+\end{frame}
+
+% --- Speed Comparison ---
+\begin{frame}{Speed Comparison: Option Pricing}
+\begin{center}
+{\footnotesize From Chen, Didisheim \& Scheidegger (2026), \emph{J.\ Financial Economics}:}
+
+\vspace{0.2cm}
+\small
+\begin{tabular}{l r r r}
+\toprule
+\textbf{Task} & \textbf{FFT} & \textbf{Surr.\ (CPU)} & \textbf{Surr.\ (GPU)} \\
+\midrule
+Single price & $23$ ms & $\emphc{0.03}$ ms & --- \\
+1-day calib.\ ($6\!\times\!10^5$) & $3.3$ h & $\emphc{18}$ s & $\emphc{0.4}$ s\\
+1-year calib.\ ($1.5\!\times\!10^8$) & ${\approx}\,100$ d & $\emphc{1.2}$ h & $\emphc{98}$ s\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\vspace{0.3cm}
+\begin{alertblock}{Takeaway}
+Deep surrogates enable \emphc{real-time calibration} of option pricing models --- tasks that previously took days or were infeasible.
+\end{alertblock}
+\end{frame}
+
+% --- Application: Structural Estimation ---
+\begin{frame}{Application I: Structural Estimation}
+\textbf{Goal:} Estimate structural parameters $\theta$ from data via GMM:
+\[
+\hat{\theta}_{GMM} = \argmin_\theta\; g_n(\theta)^\top \, W \, g_n(\theta),
+\]
+where $g_n(\theta) = \frac{1}{n}\sum_{i=1}^n m(y_i, \theta)$ and computing $m(\cdot)$ requires solving the model.
+
+\vspace{0.3cm}
+\begin{block}{Surrogate-based estimation}
+\begin{enumerate}
+  \item Replace $f(\cdot)$ with surrogate $\phi(\cdot\,|\,\theta_{NN})$.
+  \item \emphc{Automatic differentiation} gives analytical gradients $\nabla_\theta g_n$.
+  \item First-order conditions become a \emph{system of equations} --- solve in milliseconds.
+\end{enumerate}
+\end{block}
+
+\vspace{0.3cm}
+{\small \textbf{Result:} Full GMM estimation in \emphc{seconds} instead of weeks.\\
+(Chen, Didisheim \& Scheidegger 2026)}
+\end{frame}
+
+% --- Application: Uncertainty Quantification ---
+\begin{frame}{Application II: Uncertainty Quantification}
+\textbf{DeepUQ} (Friedl, K\"ubler, Scheidegger \& Usui 2023):
+
+\vspace{0.2cm}
+\begin{center}
+\begin{tikzpicture}[
+    mlstep/.style={rectangle, draw=uzhblue, fill=uzhgreylight,
+        minimum width=2.2cm, minimum height=0.7cm, font=\footnotesize,
+        rounded corners=2pt, thick},
+    >=Stealth
+]
+\node[mlstep] (model) {IAM};
+\node[mlstep, right=1.5cm of model, fill=softblue!30] (surr) {Deep Surrogate};
+\node[mlstep, right=1.5cm of surr, fill=softgreen!30] (bayes) {Bayesian Inf.};
+\node[mlstep, right=1.5cm of bayes, fill=softorange!30] (post) {$p(\theta|\text{data})$};
+
+\draw[->, thick] (model) -- node[above=2pt, font=\scriptsize]{train} (surr);
+\draw[->, thick] (surr) -- node[above=2pt, font=\scriptsize]{$10^6$ evals} (bayes);
+\draw[->, thick] (bayes) -- (post);
+\end{tikzpicture}
+\end{center}
+
+\vspace{0.2cm}
+\begin{itemize}
+  \item Surrogate over \emphc{100+ climate \& economic parameters}
+  \item Posterior distributions of \emphc{damage functions} and \emphc{optimal carbon tax}
+  \item MCMC requires millions of model evaluations $\Rightarrow$ only feasible with surrogate
+\end{itemize}
+\end{frame}
+
+% --- Implied Volatility Surface ---
+\begin{frame}{Application III: The Implied Volatility Surface}
+\textbf{Goal:} Learn the mapping from option characteristics to implied volatility:
+$\sigma_{IV} = \phi(K, T, S_0, r, \theta_{\text{model}})$
+
+\vspace{0.1cm}
+\begin{center}
+\begin{tikzpicture}[
+    node distance=1.5cm,
+    input/.style={circle, draw=uzhblue, fill=uzhgreylight, minimum size=0.8cm, font=\footnotesize},
+    hidden/.style={rectangle, draw=darkred, fill=red!5, minimum width=1.5cm, minimum height=2cm, rounded corners},
+    output/.style={circle, draw=softgreen, fill=green!10, minimum size=0.9cm, font=\small},
+    arr/.style={-Stealth, thick, gray}
+]
+    \node[input] (K) at (0, 1.2) {$K, T$};
+    \node[input] (S) at (0, 0) {$S_0, r$};
+    \node[input] (P) at (0, -1.2) {$\theta_{\text{mod}}$};
+    \node[hidden] (net) at (3, 0) {\textbf{Surrogate}};
+    \node[output] (IV) at (6, 0) {$\sigma_{IV}$};
+    \draw[arr] (K) -- (net);
+    \draw[arr] (S) -- (net);
+    \draw[arr] (P) -- (net);
+    \draw[arr] (net) -- (IV);
+\end{tikzpicture}
+\end{center}
+
+\vspace{0.1cm}
+\textbf{Benefits:}
+\begin{itemize}\itemsep1pt
+    \item \textbf{Calibration:} Invert the surrogate to find $\theta_{\text{mod}}$ matching market prices.
+    \item \textbf{Arbitrage-free:} Enforce constraints (no calendar/butterfly arb) in the loss.
+    \item \textbf{Hands-on:} See \texttt{06\_Surrogate\_Primer.ipynb} for a Black--Scholes example.
+\end{itemize}
+\end{frame}
+
+% --- Practical Tips ---
+\begin{frame}{Practical Tips for Surrogate Training}
+\begin{columns}[T]
+\begin{column}{0.48\textwidth}
+\begin{block}{Architecture}
+\begin{itemize}\setlength{\itemsep}{1pt}
+  \item Swish activation ($x \cdot \sigma(x)$)
+  \item 3--5 hidden layers, 128--512 neurons
+  \item Linear output (no activation)
+\end{itemize}
+\end{block}
+
+\begin{block}{Training}
+\begin{itemize}\setlength{\itemsep}{1pt}
+  \item $m \geq 10^5$ samples (cheap to generate)
+  \item Adam, LR $10^{-3}$, reduce on plateau
+  \item Hundreds of epochs (no overfit risk)
+\end{itemize}
+\end{block}
+\end{column}
+
+\begin{column}{0.48\textwidth}
+\begin{block}{Validation}
+\begin{itemize}\setlength{\itemsep}{1pt}
+  \item Held-out test set
+  \item Max / mean absolute error, $R^2$
+  \item Scatter: prediction vs.\ truth
+\end{itemize}
+\end{block}
+
+\begin{block}{Loss functions}
+\begin{itemize}\setlength{\itemsep}{1pt}
+  \item MSE: $\frac{1}{m}\sum_i (\phi_i - y_i)^2$
+  \item Relative $L^1$: $\frac{1}{m}\sum_i |(\phi_i - y_i)/y_i|$
+\end{itemize}
+\end{block}
+\end{column}
+\end{columns}
+\end{frame}
+
+% --- Gaussian Processes ---
+\begin{frame}{Gaussian Processes: A Complementary Tool}
+\begin{block}{Definition}
+A \emphc{Gaussian Process} is a distribution over functions:
+$f(\x) \sim \mathcal{GP}\bigl(\mu(\x),\; k(\x, \x')\bigr).$
+\end{block}
+
+\vspace{0.2em}
+\begin{columns}[T]
+\begin{column}{0.48\textwidth}
+\textbf{Key properties:}
+\begin{itemize}\itemsep1pt
+  \item \emphc{Nonparametric:} model grows with data
+  \item \emphc{Built-in UQ:} posterior mean \emph{and} variance
+  \item \emphc{Principled kernels:} encode smoothness, scale
+  \item \emphc{Hyperparameter learning:} marginal likelihood
+\end{itemize}
+\end{column}
+\begin{column}{0.48\textwidth}
+\textbf{Posterior (noiseless):}
+\begin{align*}
+\bar{f}_* &= \bm{k}_*^\top K^{-1} \bm{f} \\
+\sigma_*^2 &= k(\x_*, \x_*) - \bm{k}_*^\top K^{-1} \bm{k}_*
+\end{align*}
+\vspace{-0.3cm}
+
+{\small Near data: \emphc{small variance}.\\
+Far from data: \emphc{large variance} (reverts to prior).}
+\end{column}
+\end{columns}
+
+\vspace{0.3em}
+\begin{alertblock}{Complementary to DNNs}
+GPs: best for $d \leq 10$ with built-in UQ. \quad DNNs: best for $d \gg 10$ with large data.
+\end{alertblock}
+\end{frame}
+
+% --- GPs vs DNNs ---
+\begin{frame}{GPs vs DNNs: When to Use Which}
+\begin{center}
+\small
+\begin{tabular}{l l l}
+\toprule
+\textbf{Criterion} & \textbf{Gaussian Processes} & \textbf{Deep Neural Networks} \\
+\midrule
+Uncertainty quantification & \textcolor{darkgreen}{Built-in (posterior var.)} & \textcolor{darkred}{Requires ensembles} \\
+Hyperparameter tuning & \textcolor{darkgreen}{Marginal likelihood} & \textcolor{softorange}{Grid / Bayesian opt.} \\
+Scaling with $N$ & \textcolor{darkred}{$O(N^3)$, limit $\sim 10^4$} & \textcolor{darkgreen}{$O(N)$ per epoch} \\
+Scaling with $d$ & \textcolor{darkred}{Curse of dimensionality} & \textcolor{darkgreen}{Handles $d \gg 100$} \\
+Small data ($N < 100$) & \textcolor{darkgreen}{Excellent} & \textcolor{darkred}{Typically underfits} \\
+Interpretability & \textcolor{darkgreen}{Kernel encodes prior} & \textcolor{darkred}{Black box} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\vspace{0.3cm}
+\begin{alertblock}{Rule of thumb}
+\begin{itemize}
+  \item \textbf{$d \leq 10$, need UQ:} Use GPs (+ BAL for efficient sampling).
+  \item \textbf{$d > 10$, large data:} Use DNNs (deep surrogates).
+\end{itemize}
+\end{alertblock}
+\end{frame}
+
+% --- Bayesian Active Learning ---
+\begin{frame}{Bayesian Active Learning}
+\textbf{Use the GP posterior variance to guide sampling.}
+
+\vspace{0.2cm}
+\begin{block}{Acquisition function}
+\vspace{-4pt}
+\[
+U(\x) = \rho \cdot \mu(\x) + \frac{\beta}{2}\log\sigma^2(\x)
+\]
+\vspace{-8pt}
+\begin{itemize}\setlength{\itemsep}{1pt}
+  \item $\mu(\x)$: posterior mean (\emphc{exploitation})
+  \item $\sigma^2(\x)$: posterior variance (\emphc{exploration})
+  \item Pure exploration ($\rho = 0$): select where uncertainty is highest
+\end{itemize}
+\end{block}
+
+\vspace{0.2cm}
+\begin{center}
+\begin{tikzpicture}[
+    mlstep/.style={rectangle, draw=uzhblue, fill=uzhgreylight,
+        minimum width=2cm, minimum height=0.6cm, font=\footnotesize,
+        rounded corners=2pt, thick},
+    >=Stealth
+]
+\node[mlstep, fill=softorange!30] (init) {Design $\mathcal{D}_0$};
+\node[mlstep, right=0.6cm of init, fill=softblue!30] (gp) {Fit GP};
+\node[mlstep, right=0.6cm of gp, fill=softgreen!20] (score) {Score $U(\x)$};
+\node[mlstep, right=0.6cm of score] (select) {Select $\x_{\text{new}}$};
+\node[mlstep, right=0.6cm of select] (query) {Query $f(\x_{\text{new}})$};
+\draw[->, thick] (init) -- (gp);
+\draw[->, thick] (gp) -- (score);
+\draw[->, thick] (score) -- (select);
+\draw[->, thick] (select) -- (query);
+\draw[->, thick, rounded corners=5pt] (query.south) -- ++(0,-0.4) -| (gp.south);
+\end{tikzpicture}
+\end{center}
+\end{frame}
+
+% --- BAL vs Uniform ---
+\begin{frame}{BAL vs Uniform Sampling}
+{\small Target: $f(x) = |\sin(\pi x/2)|$ (has kinks at $x \in \{0, \pm 2\}$). Same budget: 11 points.}
+
+\vspace{0.2cm}
+\begin{center}
+\begin{tikzpicture}
+% Left: BAL
+\begin{axis}[
+    name=bal,
+    width=7cm, height=5cm,
+    title={\small \textbf{BAL}: concentrates near kinks},
+    xlabel={$x$}, ylabel={$f(x)$},
+    xlabel style={font=\small}, ylabel style={font=\small},
+    tick label style={font=\scriptsize},
+    xmin=-1, xmax=1, ymin=-0.2, ymax=1.2,
+    grid=major, grid style={gray!20},
+    every axis plot/.append style={no markers},
+]
+\addplot[uzhblue, thick, domain=-1:1, samples=200] {abs(sin(3.14159*x/2 r))};
+\addplot[only marks, mark=*, mark size=2.5pt, harvardcrimson] coordinates
+    {(-0.95,0.81) (-0.6,0.81) (-0.35,0.57) (-0.15,0.23) (-0.05,0.08)
+     (0.0,0.0) (0.05,0.08) (0.15,0.23) (0.35,0.57) (0.6,0.81) (0.95,0.81)};
+\end{axis}
+
+% Right: Uniform
+\begin{axis}[
+    at={(bal.east)}, anchor=west, xshift=1cm,
+    width=7cm, height=5cm,
+    title={\small \textbf{Uniform}: wastes points in smooth regions},
+    xlabel={$x$},
+    xlabel style={font=\small},
+    tick label style={font=\scriptsize},
+    xmin=-1, xmax=1, ymin=-0.2, ymax=1.2,
+    grid=major, grid style={gray!20},
+    every axis plot/.append style={no markers},
+]
+\addplot[uzhblue, thick, domain=-1:1, samples=200] {abs(sin(3.14159*x/2 r))};
+\addplot[only marks, mark=*, mark size=2.5pt, softorange] coordinates
+    {(-1.0,0.0) (-0.8,0.95) (-0.6,0.81) (-0.4,0.59) (-0.2,0.31)
+     (0.0,0.0) (0.2,0.31) (0.4,0.59) (0.6,0.81) (0.8,0.95) (1.0,0.0)};
+\end{axis}
+\end{tikzpicture}
+\end{center}
+
+\vspace{0.1cm}
+{\small \textcolor{harvardcrimson}{\textbf{BAL}} clusters points near $x=0$ (kink) where the function is hardest to approximate.
+\textcolor{softorange}{\textbf{Uniform}} spreads evenly --- several points wasted in smooth regions ($|x| > 0.5$).}
+\end{frame}
+
+% --- Summary: Deep Surrogates ---
+\begin{frame}{Summary: Deep Surrogate Models}
+\begin{enumerate}
+  \item \textbf{Surrogates} = cheap, accurate replicas of expensive models.
+  \item \textbf{Pseudo-states} ($\theta$ as extra inputs) unlock:
+  \begin{itemize}
+    \item Structural estimation (GMM in seconds)
+    \item Uncertainty quantification (MCMC with surrogate)
+    \item Optimal policy design
+  \end{itemize}
+  \item \textbf{Key advantage:} unlimited training data $\Rightarrow$ no overfitting.
+  \item \textbf{Speed:} orders of magnitude faster than original model.
+  \item \textbf{GPs + BAL:} complementary for moderate $d$ with built-in UQ.
+\end{enumerate}
+
+\vspace{0.3cm}
+\begin{block}{Hands-on notebooks}
+\texttt{06\_Surrogate\_Primer.ipynb} --- Black--Scholes surrogate with IV inversion.\\
+\texttt{07\_GP\_and\_BAL.ipynb} --- GP regression from scratch and Bayesian Active Learning.
+\end{block}
+\end{frame}
+
+
+% ============================================================================
+% PART VII: HANDS-ON EXERCISES
 % ============================================================================
 
 \section{Hands-on Exercises}
@@ -1826,6 +2325,8 @@ Analytical sol. & yes ($\delta=1$) & no \\
 \texttt{03\_DEQN\_Exercises\_Solutions} & Exercise solutions \\
 \texttt{04\_IRBC\_DEQN} & Full IRBC model: multi-country DEQN with adjustment costs and irreversibility \\
 \texttt{05\_Neural\_Architecture\_Search} & NAS via random search: hyperparameter space, top-$k$ selection \\
+\texttt{06\_Surrogate\_Primer} & Deep surrogates: Black--Scholes pricing \& implied volatility inversion \\
+\texttt{07\_GP\_and\_BAL} & GP regression from scratch, scikit-learn, Bayesian Active Learning \\
 \bottomrule
 \end{tabular}
 }
