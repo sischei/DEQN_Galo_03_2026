@@ -34,20 +34,32 @@ The lectures combine theoretical discussions with hands-on coding exercises in P
 
 All notebooks run on **Python 3.9+**. The main dependencies are:
 
-| Package | Purpose |
-|---------|---------|
-| [NumPy](https://numpy.org/) | Numerical computing |
-| [SciPy](https://scipy.org/) | Scientific computing |
-| [Matplotlib](https://matplotlib.org/) | Visualization |
-| [TensorFlow](https://www.tensorflow.org/) >= 2.15 | Deep learning (DEQNs) |
-| [TensorFlow Probability](https://www.tensorflow.org/probability) >= 0.23 | Probabilistic modeling |
-| [PyTorch](https://pytorch.org/) >= 2.0 | Deep learning (selected notebooks) |
+| Package | Version | Purpose | Used in |
+|---------|---------|---------|---------|
+| [NumPy](https://numpy.org/) | >= 1.24 | Numerical computing | All notebooks |
+| [SciPy](https://scipy.org/) | >= 1.10 | Scientific computing (optimization, linear algebra) | 06, 07 |
+| [Pandas](https://pandas.pydata.org/) | >= 2.0 | Data analysis | 05 |
+| [Matplotlib](https://matplotlib.org/) | >= 3.7 | Visualization | All notebooks |
+| [scikit-learn](https://scikit-learn.org/) | >= 1.3 | Gaussian Process regression, kernels | 07 |
+| [TensorFlow](https://www.tensorflow.org/) | >= 2.15 | Deep learning (DEQNs, surrogates) | 01–05 |
+| [TensorFlow Probability](https://www.tensorflow.org/probability) | >= 0.23 | Probabilistic modeling (stochastic shocks) | 02 |
+| [PyTorch](https://pytorch.org/) | >= 2.0 | Deep learning (surrogate primer) | 06 |
 
-To install all dependencies at once:
+### Installation
+
+We recommend using a virtual environment:
 
 ```bash
+# Create and activate a virtual environment
+python -m venv .venv
+source .venv/bin/activate   # Linux/macOS
+# .venv\Scripts\activate    # Windows
+
+# Install all dependencies
 pip install -r requirements.txt
 ```
+
+**Note:** TensorFlow and PyTorch are both required since different notebooks use different frameworks (notebooks 01–05 use TensorFlow/Keras; notebook 06 uses PyTorch).
 
 ---
 
