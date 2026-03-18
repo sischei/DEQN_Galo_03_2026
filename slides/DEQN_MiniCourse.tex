@@ -2231,54 +2231,24 @@ U(\x) = \rho \cdot \mu(\x) + \frac{\beta}{2}\log\sigma^2(\x)
 \end{center}
 \end{frame}
 
-% --- BAL vs Uniform ---
-\begin{frame}{BAL vs Uniform Sampling}
-{\small Target: $f(x) = |\sin(\pi x/2)|$ (has kinks at $x \in \{0, \pm 2\}$). Same budget: 11 points.}
-
-\vspace{0.2cm}
-\begin{center}
-\begin{tikzpicture}
-% Left: BAL
-\begin{axis}[
-    name=bal,
-    width=7cm, height=5cm,
-    title={\small \textbf{BAL}: concentrates near kinks},
-    xlabel={$x$}, ylabel={$f(x)$},
-    xlabel style={font=\small}, ylabel style={font=\small},
-    tick label style={font=\scriptsize},
-    xmin=-1, xmax=1, ymin=-0.2, ymax=1.2,
-    grid=major, grid style={gray!20},
-    every axis plot/.append style={no markers},
-]
-\addplot[uzhblue, thick, domain=-1:1, samples=200] {abs(sin(3.14159*x/2 r))};
-\addplot[only marks, mark=*, mark size=2.5pt, harvardcrimson] coordinates
-    {(-0.95,0.81) (-0.6,0.81) (-0.35,0.57) (-0.15,0.23) (-0.05,0.08)
-     (0.0,0.0) (0.05,0.08) (0.15,0.23) (0.35,0.57) (0.6,0.81) (0.95,0.81)};
-\end{axis}
-
-% Right: Uniform
-\begin{axis}[
-    at={(bal.east)}, anchor=west, xshift=1cm,
-    width=7cm, height=5cm,
-    title={\small \textbf{Uniform}: wastes points in smooth regions},
-    xlabel={$x$},
-    xlabel style={font=\small},
-    tick label style={font=\scriptsize},
-    xmin=-1, xmax=1, ymin=-0.2, ymax=1.2,
-    grid=major, grid style={gray!20},
-    every axis plot/.append style={no markers},
-]
-\addplot[uzhblue, thick, domain=-1:1, samples=200] {abs(sin(3.14159*x/2 r))};
-\addplot[only marks, mark=*, mark size=2.5pt, softorange] coordinates
-    {(-1.0,0.0) (-0.8,0.95) (-0.6,0.81) (-0.4,0.59) (-0.2,0.31)
-     (0.0,0.0) (0.2,0.31) (0.4,0.59) (0.6,0.81) (0.8,0.95) (1.0,0.0)};
-\end{axis}
-\end{tikzpicture}
-\end{center}
+% --- BAL in Action ---
+\begin{frame}{BAL in Action: Progressive Refinement}
+{\small BAL selects each new point where the \emphc{posterior variance is largest} (green diamond), causing the credible band to shrink exactly where it was widest.}
 
 \vspace{0.1cm}
-{\small \textcolor{harvardcrimson}{\textbf{BAL}} clusters points near $x=0$ (kink) where the function is hardest to approximate.
-\textcolor{softorange}{\textbf{Uniform}} spreads evenly --- several points wasted in smooth regions ($|x| > 0.5$).}
+\begin{center}
+\includegraphics[width=0.95\textwidth]{figures/gp_active_learning.pdf}
+\end{center}
+
+\vspace{-0.1cm}
+{\footnotesize
+\begin{itemize}\itemsep1pt
+  \item[\textbf{(a)}] 3 initial observations (red dots); GP posterior (blue) deviates in data-sparse regions with wide 95\% CI.
+  \item[\textbf{(b)}] Acquisition function picks max-variance point (green diamond); posterior tightens locally.
+  \item[\textbf{(c)}] Second iteration fills the remaining gap --- 5 points suffice to track the true function.
+\end{itemize}}
+
+{\small \textbf{Key contrast with uniform:} BAL concentrates points where the function is hardest to approximate.}
 \end{frame}
 
 % --- Summary: Deep Surrogates ---
